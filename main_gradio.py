@@ -20,11 +20,18 @@ def load_chain():
         embedding_function=embeddings
     )
 
-    llm = InternLM_LLM(model_path = "/root/Animal-Doctor/data/model/internlm2-chat-7b")
+    llm = InternLM_LLM(model_path = "/root/Animal-Doctor/data/model/internlm2-chat-20b")
 
     # 你可以修改这里的 prompt template 来试试不同的问答效果
-    template = """请使用以下提供的上下文来回答用户的问题。如果无法从上下文中得到答案，请回答你不知道，并总是使用中文回答。
-    提供的上下文：
+    template = """请列出牛常见的疾病，并提供每种疾病的详细信息。
+
+                具体需求如下：
+                1. 疾病名称
+                2. 主要症状
+                3. 预防措施
+                4. 治疗方法
+
+                希望这些信息能帮助更好地了解和管理牛的健康问题。谢谢！
     ···
     {context}
     ···
@@ -71,8 +78,8 @@ block = gr.Blocks()
 with block as demo:
     with gr.Row(equal_height=True):   
         with gr.Column(scale=15):
-            gr.Markdown("""<h1><center>InternLM</center></h1>
-                <center>书生浦语</center>
+            gr.Markdown("""<h1><center>Animal-Doctor</center></h1>
+                <center>动物医生</center>
                 """)
         # gr.Image(value=LOGO_PATH, scale=1, min_width=10,show_label=False, show_download_button=False)
 
@@ -84,11 +91,11 @@ with block as demo:
 
             with gr.Row():
                 # 创建提交按钮。
-                db_wo_his_btn = gr.Button("Chat")
+                db_wo_his_btn = gr.Button("提问")
             with gr.Row():
                 # 创建一个清除按钮，用于清除聊天机器人组件的内容。
                 clear = gr.ClearButton(
-                    components=[chatbot], value="Clear console")
+                    components=[chatbot], value="清除")
                 
         # 设置按钮的点击事件。当点击时，调用上面定义的 qa_chain_self_answer 函数，并传入用户的消息和聊天历史记录，然后更新文本框和聊天机器人组件。
         db_wo_his_btn.click(model_center.qa_chain_self_answer, inputs=[
