@@ -5,6 +5,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 from LLM import InternLM_LLM
 from langchain.prompts import PromptTemplate
+from lmdeploy import pipeline, TurbomindEngineConfig
 
 def load_chain():
     # 加载问答链
