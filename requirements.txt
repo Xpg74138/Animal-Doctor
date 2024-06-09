@@ -22,5 +22,5 @@ scikit-image
 sympy==1.11.1
 tokenizers==0.19.1
 tqdm==4.66.4
-transformers==4.37.2
+transformers==4.40.0
 triton==2.1.0
