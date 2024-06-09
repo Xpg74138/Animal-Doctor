@@ -20,7 +20,7 @@ sentencepiece==0.1.99
 setuptools==68.0.0
 scikit-image
 sympy==1.11.1
-tokenizers==0.18.9
+tokenizers==0.15.2
 tqdm==4.66.4
 transformers==4.38.2
 triton==2.1.0
