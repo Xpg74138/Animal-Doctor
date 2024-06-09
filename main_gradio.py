@@ -24,7 +24,7 @@ def load_chain():
     llm = InternLM_LLM(model_path = "/root/Animal-Doctor/data/model/internlm2-chat-7b")
 
     # 你可以修改这里的 prompt template 来试试不同的问答效果
-    template = """请列出牛常见的疾病，并提供每种疾病的详细信息。
+    template = """请列出畜禽常见的疾病，并提供每种疾病的详细信息。
 
                 具体需求如下：
                 1. 疾病名称
@@ -32,7 +32,7 @@ def load_chain():
                 3. 预防措施
                 4. 治疗方法
 
-                希望这些信息能帮助更好地了解和管理牛的健康问题。谢谢！
+                希望这些信息能帮助更好地了解和管理畜禽的健康问题。谢谢！
     ···
     {context}
     ···
@@ -80,15 +80,14 @@ with block as demo:
     with gr.Row(equal_height=True):   
         with gr.Column(scale=15):
             gr.Markdown("""<h1><center>Animal-Doctor</center></h1>
-                <center>动物医生</center>
                 """)
         # gr.Image(value=LOGO_PATH, scale=1, min_width=10,show_label=False, show_download_button=False)
 
     with gr.Row():
         with gr.Column(scale=4):
-            chatbot = gr.Chatbot(height=450, show_copy_button=True)
+            chatbot = gr.Chatbot(height=550, show_copy_button=True)
             # 创建一个文本框组件，用于输入 prompt。
-            msg = gr.Textbox(label="Prompt/问题")
+            msg = gr.Textbox(label="问题")
 
             with gr.Row():
                 # 创建提交按钮。
@@ -104,7 +103,7 @@ with block as demo:
         
     gr.Markdown("""提醒：<br>
     1. 初始化数据库时间可能较长，请耐心等待。
-    2. 使用中如果出现异常，将会在文本输入框进行展示，请不要惊慌。 <br>
+    2. 使用中如果出现异常，将会在文本输入框进行展示。 <br>
     """)
 # threads to consume the request
 gr.close_all()
