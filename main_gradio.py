@@ -21,7 +21,7 @@ def load_chain():
         embedding_function=embeddings
     )
 
-    llm = InternLM_LLM(model_path = "/root/Animal-Doctor/data/model/internlm2-chat-20b")
+    llm = InternLM_LLM(model_path = "/root/Animal-Doctor/data/model/internlm2-chat-7b")
 
     # 你可以修改这里的 prompt template 来试试不同的问答效果
     template = """请列出牛常见的疾病，并提供每种疾病的详细信息。
