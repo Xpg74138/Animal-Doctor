@@ -6,7 +6,9 @@ from LLM import InternLM_LLM
 from langchain.prompts import PromptTemplate
 import subprocess
 import sys
-#debug splite3
+import threading
+
+# debug splite3
 chromadb_init_path = "/usr/local/share/python/.pyenv/versions/3.10.13/lib/python3.10/site-packages/chromadb/__init__.py"
 
 replacement_code = """
@@ -84,7 +86,7 @@ class Model_center():
     def __init__(self):
         self.chain = load_chain()
 
-    def qa_chain_self_answer(self, question: str, env_temp: float, animal_temp: float, humidity: float, feed_intake: float,particle_concentration:float,ammonia_concentration:float,chat_history: list = []):
+    def qa_chain_self_answer(self, question: str, env_temp: float, animal_temp: float, humidity: float, feed_intake: float, particle_concentration:float, ammonia_concentration:float, chat_history: list = []):
         if question is None or len(question) < 1:
             return "", chat_history
         try:
@@ -93,8 +95,8 @@ class Model_center():
                 "animal_temp": animal_temp,
                 "humidity": humidity,
                 "feed_intake": feed_intake,
-                "particle_concentration":particle_concentration,
-                "ammonia_concentration":ammonia_concentration,
+                "particle_concentration": particle_concentration,
+                "ammonia_concentration": ammonia_concentration,
             }
             context_str = '\n'.join([f"{key}: {value}" for key, value in context.items()])
             prompt = f"上下文信息: {context_str}\n问题: {question}"
@@ -104,12 +106,12 @@ class Model_center():
         except Exception as e:
             return str(e), chat_history
 
-
 model_center = Model_center()
 
 block = gr.Blocks()
+
 with block as demo:
-    with gr.Row(equal_height=True):   
+    with gr.Row(equal_height=True):
         with gr.Column(scale=15):
             gr.Markdown("""<h1><center>Animal-Doctor</center></h1>
                 """)
@@ -131,13 +133,18 @@ with block as demo:
     with gr.Row():
         clear = gr.ClearButton(components=[chatbot], value="清除")
 
-    submit_btn.click(model_center.qa_chain_self_answer, 
-                            inputs=[msg, env_temp, animal_temp, humidity, feed_intake,particle_concentration,ammonia_concentration, chatbot], 
-                            outputs=[msg, chatbot])
+    submit_btn.click(model_center.qa_chain_self_answer,
+                     inputs=[msg, env_temp, animal_temp, humidity, feed_intake, particle_concentration, ammonia_concentration, chatbot],
+                     outputs=[msg, chatbot])
+
     gr.Markdown("""提醒：<br>
     1. 初始化数据库时间可能较长，请耐心等待。
     2. 使用中如果出现异常，将会在文本输入框进行展示。 <br>
     """)
-# threads to consume the request
+
+# Launch Gradio interface in a separate thread
+def launch_gradio_interface():
+    demo.launch()
+
 gr.close_all()
-demo.launch()
+threading.Thread(target=launch_gradio_interface).start()
