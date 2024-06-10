@@ -33,7 +33,7 @@ except Exception as e:
 import chromadb
 
 # # download internlm2 to the base_path directory using git tool
-base_path = 'Animal-Docotr/data/model/internlm2-chat-7b'
+base_path = 'Animal-Doctor/data/model/internlm2-chat-7b'
 os.system(f'git clone https://code.openxlab.org.cn/OpenLMLab/internlm2-chat-7b.git {base_path}')
 os.system(f'cd {base_path} && git lfs install && git lfs pull')
 
