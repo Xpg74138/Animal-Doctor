@@ -2,13 +2,14 @@ import gradio as gr
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
-from LLM import InternLM_LLM
-from langchain.prompts import PromptTemplate
 import subprocess
 import sys
-#debug splite3
-chromadb_init_path = "/usr/local/share/python/.pyenv/versions/3.10.13/lib/python3.10/site-packages/chromadb/__init__.py"
+from LLM import InternLM_LLM
+from langchain.prompts import PromptTemplate
+import gc
 
+# Modify chromadb __init__.py for sqlite3 compatibility
+chromadb_init_path = "/usr/local/share/python/.pyenv/versions/3.10.13/lib/python3.10/site-packages/chromadb/__init__.py"
 replacement_code = """
 __import__('pysqlite3')
 import sys
@@ -30,21 +31,23 @@ except FileNotFoundError:
 except Exception as e:
     print(f"An error occurred: {e}")
 
-import chromadb
-
-# # download internlm2 to the base_path directory using git tool
+# Download models only if they are not already present
 base_path = 'Animal-Doctor/data/model/internlm2-chat-7b-4bits'
-os.system(f'git clone https://code.openxlab.org.cn/OpenLMLab/internlm2-chat-7b-4bits.git {base_path}')
-os.system(f'cd {base_path} && git lfs install && git lfs pull')
+if not os.path.exists(base_path):
+    os.system(f'git clone https://code.openxlab.org.cn/OpenLMLab/internlm2-chat-7b-4bits.git {base_path}')
+    os.system(f'cd {base_path} && git lfs install && git lfs pull')
 
-# #download Sentence Transformer
+# Download Sentence Transformer
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
-os.system(f'huggingface-cli download --resume-download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir Animal-Doctor/data/model/sentence-transformer')
+sentence_transformer_path = 'Animal-Doctor/data/model/sentence-transformer'
+if not os.path.exists(sentence_transformer_path):
+    os.system(f'huggingface-cli download --resume-download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir {sentence_transformer_path}')
 
+# Load chain function
 def load_chain():
-    embeddings = HuggingFaceEmbeddings(model_name="Animal-Doctor/data/model/sentence-transformer")
+    embeddings = HuggingFaceEmbeddings(model_name=sentence_transformer_path)
 
-    persist_directory = 'Animal-Docotr/data_base/vector_db/chroma'
+    persist_directory = 'Animal-Doctor/data_base/vector_db/chroma'
 
     vectordb = Chroma(
         persist_directory=persist_directory,
@@ -84,7 +87,7 @@ class Model_center():
     def __init__(self):
         self.chain = load_chain()
 
-    def qa_chain_self_answer(self, question: str, env_temp: float, animal_temp: float, humidity: float, feed_intake: float,particle_concentration:float,ammonia_concentration:float,chat_history: list = []):
+    def qa_chain_self_answer(self, question: str, env_temp: float, animal_temp: float, humidity: float, feed_intake: float, particle_concentration: float, ammonia_concentration: float, chat_history: list = []):
         if question is None or len(question) < 1:
             return "", chat_history
         try:
@@ -93,17 +96,17 @@ class Model_center():
                 "animal_temp": animal_temp,
                 "humidity": humidity,
                 "feed_intake": feed_intake,
-                "particle_concentration":particle_concentration,
-                "ammonia_concentration":ammonia_concentration,
+                "particle_concentration": particle_concentration,
+                "ammonia_concentration": ammonia_concentration,
             }
             context_str = '\n'.join([f"{key}: {value}" for key, value in context.items()])
             prompt = f"上下文信息: {context_str}\n问题: {question}"
-            chat_history.append(
-                (question, self.chain({"query": prompt})["result"]))
+            result = self.chain({"query": prompt})["result"]
+            chat_history.append((question, result))
+            gc.collect()  # Manually trigger garbage collection
             return "", chat_history
         except Exception as e:
             return str(e), chat_history
-
 
 model_center = Model_center()
 
@@ -111,8 +114,7 @@ block = gr.Blocks()
 with block as demo:
     with gr.Row(equal_height=True):   
         with gr.Column(scale=15):
-            gr.Markdown("""<h1><center>Animal-Doctor</center></h1>
-                """)
+            gr.Markdown("""<h1><center>Animal-Doctor</center></h1>""")
 
     with gr.Row():
         with gr.Column(scale=5):
@@ -132,12 +134,13 @@ with block as demo:
         clear = gr.ClearButton(components=[chatbot], value="清除")
 
     submit_btn.click(model_center.qa_chain_self_answer, 
-                            inputs=[msg, env_temp, animal_temp, humidity, feed_intake,particle_concentration,ammonia_concentration, chatbot], 
-                            outputs=[msg, chatbot])
+                     inputs=[msg, env_temp, animal_temp, humidity, feed_intake, particle_concentration, ammonia_concentration, chatbot], 
+                     outputs=[msg, chatbot])
     gr.Markdown("""提醒：<br>
     1. 初始化数据库时间可能较长，请耐心等待。
     2. 使用中如果出现异常，将会在文本输入框进行展示。 <br>
     """)
-# threads to consume the request
+# Clean up old Gradio sessions
 gr.close_all()
 demo.launch()
+
