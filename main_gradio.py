@@ -4,6 +4,32 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 from LLM import InternLM_LLM
 from langchain.prompts import PromptTemplate
+import subprocess
+import sys
+#debug splite3
+chromadb_init_path = "/usr/local/share/python/.pyenv/versions/3.10.13/lib/python3.10/site-packages/chromadb/__init__.py"
+
+replacement_code = """
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+"""
+
+try:
+    with open(chromadb_init_path, "r") as file:
+        content = file.read()
+
+    if replacement_code not in content:
+        with open(chromadb_init_path, "w") as file:
+            file.write(replacement_code + content)
+        print("Successfully modified chromadb __init__.py")
+    else:
+        print("chromadb __init__.py already modified")
+except FileNotFoundError:
+    print(f"File not found: {chromadb_init_path}")
+except Exception as e:
+    print(f"An error occurred: {e}")
+
 
 # # download internlm2 to the base_path directory using git tool
 base_path = 'Animal-Docotr/data/model/internlm2-chat-7b'
