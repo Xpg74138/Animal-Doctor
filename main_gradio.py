@@ -15,7 +15,7 @@ os.system(f'cd {base_path} && git lfs install && git lfs pull')
 
 #download Sentence Transformer
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
-os.system('huggingface-cli download --resume-download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./Animal-Docotr/data/model/sentence-transformer')
+os.system(f'huggingface-cli download --resume-download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./Animal-Doctor/data/model/sentence-transformer')
 
 def load_chain():
     # 加载问答链
