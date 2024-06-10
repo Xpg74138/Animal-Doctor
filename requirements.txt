@@ -11,3 +11,4 @@ unstructured==0.10.30
 markdown==3.3.7
 huggingface_hub
 langchain_community
+pysqlite3-binary
