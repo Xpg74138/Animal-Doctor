@@ -5,7 +5,17 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 import os
 from LLM import InternLM_LLM
 from langchain.prompts import PromptTemplate
-from lmdeploy import pipeline, TurbomindEngineConfig
+
+
+
+# download internlm2 to the base_path directory using git tool
+base_path = './Animal-Docotr/data/model/internlm2-chat-7b'
+os.system(f'git clone https://code.openxlab.org.cn/OpenLMLab/internlm2-chat-7b.git {base_path}')
+os.system(f'cd {base_path} && git lfs pull')
+
+#download Sentence Transformer
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+os.system('huggingface-cli download --resume-download sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 --local-dir ./Animal-Docotr/data/model/sentence-transformer')
 
 def load_chain():
     # 加载问答链
@@ -21,7 +31,7 @@ def load_chain():
         embedding_function=embeddings
     )
 
-    llm = InternLM_LLM(model_path = "/root/Animal-Doctor/data/model/internlm2-chat-7b")
+    llm = InternLM_LLM(model_path = "./Animal-Docotr/data/model/internlm2-chat-7b")
 
     # 你可以修改这里的 prompt template 来试试不同的问答效果
     template = """请列出畜禽常见的疾病，并提供每种疾病的详细信息。
