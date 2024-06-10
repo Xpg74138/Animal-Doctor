@@ -11,7 +11,7 @@ from langchain.prompts import PromptTemplate
 # download internlm2 to the base_path directory using git tool
 base_path = './Animal-Docotr/data/model/internlm2-chat-7b'
 os.system(f'git clone https://code.openxlab.org.cn/OpenLMLab/internlm2-chat-7b.git {base_path}')
-os.system(f'cd {base_path} && git lfs pull')
+os.system(f'cd {base_path} && git lfs install && git lfs pull')
 
 #download Sentence Transformer
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
