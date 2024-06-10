@@ -54,7 +54,7 @@ def load_chain():
         embedding_function=embeddings
     )
 
-    llm = InternLM_LLM(model_path="Animal-Doctor/data/model/internlm2-chat-7b")
+    llm = InternLM_LLM(model_path="Animal-Doctor/data/model/internlm2-chat-7b-4bits")
 
     template = """请列出畜禽常见的疾病，并提供每种疾病的详细信息。
 
