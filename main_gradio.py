@@ -30,6 +30,7 @@ except FileNotFoundError:
 except Exception as e:
     print(f"An error occurred: {e}")
 
+import chromadb
 
 # # download internlm2 to the base_path directory using git tool
 base_path = 'Animal-Docotr/data/model/internlm2-chat-7b'
