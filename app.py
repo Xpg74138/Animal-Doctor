@@ -32,9 +32,9 @@ except Exception as e:
     print(f"An error occurred: {e}")
 
 # Download models only if they are not already present
-base_path = 'Animal-Doctor/data/model/internlm2-chat-1_8b'
+base_path = 'Animal-Doctor/data/model/internlm2-chat-1.8b'
 if not os.path.exists(base_path):
-    os.system(f'git clone git@code.openxlab.org.cn:comefly/internlm-chat-1.8b.git {base_path}')
+    os.system(f'git clone git@code.openxlab.org.cn:OpenLMLab/internlm2-chat-1.8b.git {base_path}')
     os.system(f'cd {base_path} && git lfs install && git lfs pull')
 
 # Download Sentence Transformer
@@ -54,7 +54,7 @@ def load_chain():
         embedding_function=embeddings
     )
 
-    llm = InternLM_LLM(model_path="/home/xlab-app-center/Animal-Doctor/data/model/internlm2-chat-1_8b")
+    llm = InternLM_LLM(model_path="Animal-Doctor/data/model/internlm2-chat-1.8b")
 
     template = """请列出畜禽常见的疾病，并提供每种疾病的详细信息。
 
